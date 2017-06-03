@@ -3,7 +3,7 @@
 
 <?php
 
-if(!isset($_SESSION['score'])){
+    if(!isset($_SESSION['score'])){
 		$_SESSION['score'] = 0;
 	}
 	
@@ -13,17 +13,43 @@ if(!isset($_SESSION['score'])){
 		$selected_choice = $_POST['choice'];
 		$next = $number+1;
 		
-		echo $number;
+        /*
+		*	Get total questions
+		*/
+		$query = "SELECT * FROM `questions`";
+		//Get result
+		$results = $mysqli->query($query) or die($mysqli->error.__LINE__);
+		$total = $results->num_rows;
 		
-		echo $selected_choice;
+		/*
+		*	Get correct choice
+		*/
 		
+		$query = "SELECT * FROM `choices`
+					WHERE question_number = $number AND is_correct = 1";
+					
+		//Get result
+		$result = $mysqli->query($query) or die($mysqli->error.__LINE__);
 		
+		//Get row
+		$row = $result->fetch_assoc();
 		
+		//Set correct choice
+		$correct_choice = $row['id'];
 		
+		if($correct_choice == $selected_choice){
+			//Answer is correct
+			$_SESSION['score']++;
+			
+			
+		}
 		
-		
-		
-		
+		if($number == $total){
+			header("Location: final.php");
+			exit();
+		} else {
+			header("Location: question.php?n=".$next);
+		}
 		
 	}
 
